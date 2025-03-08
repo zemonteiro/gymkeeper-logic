@@ -1,14 +1,14 @@
 
 import React from 'react';
 import Layout from '@/components/Layout';
-import Dashboard from '@/components/Dashboard';
+import Statistics from '@/components/Statistics';
 
-const Index = () => {
+const Stats = () => {
   return (
     <Layout>
-      <Dashboard />
+      <Statistics />
     </Layout>
   );
 };
 
-export default Index;
+export default Stats;
