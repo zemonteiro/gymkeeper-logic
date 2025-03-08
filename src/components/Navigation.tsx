@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, Users, Calendar, BarChart3, Menu, X } from 'lucide-react';
+import { Activity, Users, Calendar, BarChart3, Menu, X, Wrench, Shower, LayoutDashboard, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Navigation = () => {
@@ -13,10 +13,13 @@ const Navigation = () => {
   };
   
   const navItems = [
-    { name: 'Dashboard', path: '/', icon: Activity },
+    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
     { name: 'Members', path: '/members', icon: Users },
     { name: 'Classes', path: '/classes', icon: Calendar },
     { name: 'Statistics', path: '/stats', icon: BarChart3 },
+    { name: 'Maintenance', path: '/maintenance', icon: Wrench },
+    { name: 'Cleaning', path: '/cleaning', icon: Shower },
+    { name: 'Client View', path: '/client-view', icon: Eye },
   ];
   
   return (
