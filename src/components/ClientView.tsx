@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Button } from './ui/button';
@@ -48,14 +47,6 @@ const ClientView = () => {
     toast({
       title: "Logged Out",
       description: "You have been logged out successfully",
-    });
-  };
-  
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({
-      title: "Message Sent",
-      description: "Your message has been sent to our staff",
     });
   };
   
@@ -125,6 +116,16 @@ const ClientView = () => {
 };
 
 const PublicView = () => {
+  const { toast } = useToast();
+  
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Message Sent",
+      description: "Your message has been sent to our staff",
+    });
+  };
+  
   return (
     <Tabs defaultValue="home" className="w-full">
       <TabsList className="w-full justify-start mb-6">
