@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Wrench, 
@@ -43,7 +42,7 @@ interface Equipment {
   notes: string;
 }
 
-const Maintenance = () => {
+const EquipmentComponent = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [equipment, setEquipment] = useState<Equipment[]>([
@@ -173,7 +172,7 @@ const Maintenance = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold mb-2">Equipment Maintenance</h1>
+        <h1 className="text-3xl font-bold mb-2">Equipment Management</h1>
         <p className="text-gym-muted">Manage and track maintenance for gym equipment</p>
       </div>
       
@@ -408,4 +407,4 @@ const Maintenance = () => {
   );
 };
 
-export default Maintenance;
+export default EquipmentComponent;

@@ -8,7 +8,7 @@ import Index from "./pages/Index";
 import Members from "./pages/Members";
 import Classes from "./pages/Classes";
 import Stats from "./pages/Stats";
-import Maintenance from "./pages/Maintenance";
+import Equipment from "./pages/Equipment";
 import Cleaning from "./pages/Cleaning";
 import ClientView from "./pages/ClientView";
 import NotFound from "./pages/NotFound";
@@ -26,7 +26,7 @@ const App = () => (
           <Route path="/members" element={<Members />} />
           <Route path="/classes" element={<Classes />} />
           <Route path="/stats" element={<Stats />} />
-          <Route path="/maintenance" element={<Maintenance />} />
+          <Route path="/equipment" element={<Equipment />} />
           <Route path="/cleaning" element={<Cleaning />} />
           <Route path="/client-view" element={<ClientView />} />
           <Route path="*" element={<NotFound />} />
