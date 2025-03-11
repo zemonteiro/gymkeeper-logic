@@ -1,14 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, Users, Calendar, BarChart3, Menu, X, Dumbbell, Broom, LayoutDashboard, Eye } from 'lucide-react';
+import { Activity, Users, Calendar, BarChart3, Menu, X, Dumbbell, broom, LayoutDashboard, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useMediaQuery } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Navigation = () => {
   const [expanded, setExpanded] = useState(true);
   const location = useLocation();
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useIsMobile();
   
   // Auto-collapse on mobile devices
   useEffect(() => {
@@ -29,7 +29,7 @@ const Navigation = () => {
     { name: 'Classes', path: '/classes', icon: Calendar },
     { name: 'Statistics', path: '/stats', icon: BarChart3 },
     { name: 'Equipment', path: '/equipment', icon: Dumbbell },
-    { name: 'Cleaning', path: '/cleaning', icon: Broom },
+    { name: 'Cleaning', path: '/cleaning', icon: broom },
     { name: 'Client View', path: '/client-view', icon: Eye },
   ];
   
