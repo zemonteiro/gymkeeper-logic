@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, Users, Calendar, BarChart3, Menu, X, Dumbbell, Trash2, LayoutDashboard, Eye } from 'lucide-react';
+import { Activity, Users, Calendar, BarChart3, Menu, ChevronLeft, ChevronRight, Dumbbell, Spray, LayoutDashboard, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -29,7 +29,7 @@ const Navigation = () => {
     { name: 'Classes', path: '/classes', icon: Calendar },
     { name: 'Statistics', path: '/stats', icon: BarChart3 },
     { name: 'Equipment', path: '/equipment', icon: Dumbbell },
-    { name: 'Cleaning', path: '/cleaning', icon: Trash2 },
+    { name: 'Cleaning', path: '/cleaning', icon: Spray },
     { name: 'Client View', path: '/client-view', icon: Eye },
   ];
   
@@ -48,7 +48,7 @@ const Navigation = () => {
         className="lg:hidden fixed top-4 left-4 z-50 rounded-full p-2 bg-white shadow-subtle"
         aria-label={expanded ? "Close menu" : "Open menu"}
       >
-        {expanded ? <X size={20} /> : <Menu size={20} />}
+        {expanded ? <ChevronLeft size={20} /> : <Menu size={20} />}
       </button>
     
       {/* Navigation sidebar */}
@@ -63,7 +63,7 @@ const Navigation = () => {
       >
         <div className="flex flex-col h-full py-8">
           <div className={cn(
-            "px-6 mb-8 flex items-center",
+            "px-6 mb-8 flex items-center justify-between",
             !expanded && "lg:justify-center"
           )}>
             <h1 className={cn(
@@ -72,6 +72,13 @@ const Navigation = () => {
             )}>
               {expanded ? "GymKeeper" : "GK"}
             </h1>
+            <button
+              onClick={toggleSidebar}
+              className="hidden lg:flex items-center justify-center rounded-lg text-gym-muted hover:text-gym-primary hover:bg-gym-secondary transition-colors"
+              aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+            >
+              {expanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+            </button>
           </div>
           
           <nav className="flex-1 px-4">
@@ -103,16 +110,13 @@ const Navigation = () => {
             </ul>
           </nav>
           
-          <div className={cn(
-            "px-6 mt-auto",
-            !expanded && "lg:flex lg:justify-center"
-          )}>
+          <div className="px-6 mt-auto hidden">
             <button
               onClick={toggleSidebar}
               className="hidden lg:flex items-center justify-center w-full p-2 rounded-lg text-gym-muted hover:text-gym-primary hover:bg-gym-secondary transition-colors"
               aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
             >
-              {expanded ? <X size={18} /> : <Menu size={18} />}
+              {expanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
             </button>
           </div>
         </div>

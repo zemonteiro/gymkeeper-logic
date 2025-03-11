@@ -261,9 +261,7 @@ const PublicView = () => {
               <p className="text-gym-muted mb-2">Instructor: {cls.instructor}</p>
               <p className="text-sm text-gym-accent mb-4">{cls.time}</p>
               <p className="mb-4">{cls.description}</p>
-              <Button variant="outline" className="w-full">
-                Book Class
-              </Button>
+              <p className="text-sm italic">Login to book classes</p>
             </div>
           ))}
         </div>
@@ -528,3 +526,4 @@ const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode, titl
 );
 
 export default ClientView;
+
