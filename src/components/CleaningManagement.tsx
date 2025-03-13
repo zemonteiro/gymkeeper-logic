@@ -7,7 +7,7 @@ import {
   Filter,
   Plus,
   Trash2,
-  MessageSquareEdit
+  MessageSquare
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -416,7 +416,7 @@ const CleaningManagement = () => {
                             onClick={() => openNotesDialog(task)}
                             title="Add/Edit Notes"
                           >
-                            <MessageSquareEdit className="h-4 w-4" />
+                            <MessageSquare className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="outline"

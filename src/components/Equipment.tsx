@@ -6,7 +6,7 @@ import {
   Clock, 
   Search,
   Plus,
-  MessageSquareEdit
+  MessageSquare
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -334,7 +334,7 @@ const EquipmentComponent = () => {
                         onClick={() => openNotesDialog(item)}
                         title="Add/Edit Notes"
                       >
-                        <MessageSquareEdit className="h-4 w-4" />
+                        <MessageSquare className="h-4 w-4" />
                       </Button>
                       <select
                         value={item.status}
