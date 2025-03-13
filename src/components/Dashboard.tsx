@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Users, Calendar, TrendingUp, Clock, HelpCircle } from 'lucide-react';
+import { Users, Calendar, TrendingUp, Clock, HelpCircle, Notebook } from 'lucide-react';
 import StatsCard from './ui/StatsCard';
 import StatChart from './ui/StatChart';
 import ClassCard from './ui/ClassCard';
@@ -18,8 +17,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import NotesLogView from './ui/NotesLogView';
 
-// Sample data
 const recentClasses = [
   {
     id: '1',
@@ -53,6 +53,48 @@ const memberActivityData = [
   { name: 'Fri', value: 350 },
   { name: 'Sat', value: 380 },
   { name: 'Sun', value: 250 },
+];
+
+const equipmentNotes = [
+  {
+    id: '1',
+    itemName: 'Treadmill Alpha-1',
+    content: 'Regular maintenance completed',
+    date: '2023-11-15'
+  },
+  {
+    id: '2',
+    itemName: 'Bench Press Station 3',
+    content: 'Cushion needs replacement',
+    date: '2023-12-01'
+  },
+  {
+    id: '3',
+    itemName: 'Rowing Machine R2',
+    content: 'Motor failure, parts ordered',
+    date: '2023-10-20'
+  }
+];
+
+const cleaningNotes = [
+  {
+    id: '1',
+    itemName: 'Main Gym Floor',
+    content: 'Full sanitization completed',
+    date: '2023-12-10'
+  },
+  {
+    id: '2',
+    itemName: 'Locker Rooms',
+    content: 'Deep cleaned showers and replaced towels',
+    date: '2023-12-10'
+  },
+  {
+    id: '3',
+    itemName: 'Cardio Equipment',
+    content: 'Special attention to handles and screens',
+    date: '2023-12-09'
+  }
 ];
 
 const Dashboard = () => {
@@ -206,6 +248,38 @@ const Dashboard = () => {
             />
           ))}
         </div>
+      </div>
+      
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold flex items-center">
+            <Notebook className="mr-2 h-5 w-5" /> 
+            Maintenance & Cleaning Notes
+          </h2>
+        </div>
+        
+        <Tabs defaultValue="equipment" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="equipment">Equipment Notes</TabsTrigger>
+            <TabsTrigger value="cleaning">Cleaning Notes</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="equipment">
+            <NotesLogView 
+              title="Recent Equipment Notes" 
+              notes={equipmentNotes} 
+              emptyMessage="No equipment notes found."
+            />
+          </TabsContent>
+          
+          <TabsContent value="cleaning">
+            <NotesLogView 
+              title="Recent Cleaning Notes" 
+              notes={cleaningNotes} 
+              emptyMessage="No cleaning notes found."
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
