@@ -5,7 +5,8 @@ import {
   CheckCircle, 
   Clock, 
   Search,
-  Plus
+  Plus,
+  MessageSquareEdit
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -45,6 +46,7 @@ interface Equipment {
 const EquipmentComponent = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
+  
   const [equipment, setEquipment] = useState<Equipment[]>([
     {
       id: '1',
@@ -105,6 +107,9 @@ const EquipmentComponent = () => {
   const [editingEquipment, setEditingEquipment] = useState<Equipment | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
+  const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null);
+  const [noteContent, setNoteContent] = useState('');
   
   const handleStatusChange = (id: string, newStatus: EquipmentStatus) => {
     setEquipment(equipment.map(item => 
@@ -146,6 +151,27 @@ const EquipmentComponent = () => {
       toast({
         title: "Equipment Updated",
         description: "Equipment details have been updated",
+      });
+    }
+  };
+  
+  const openNotesDialog = (item: Equipment) => {
+    setSelectedEquipmentId(item.id);
+    setNoteContent(item.notes);
+    setIsNotesDialogOpen(true);
+  };
+  
+  const saveNotes = () => {
+    if (selectedEquipmentId) {
+      setEquipment(equipment.map(item => 
+        item.id === selectedEquipmentId ? { ...item, notes: noteContent } : item
+      ));
+      
+      setIsNotesDialogOpen(false);
+      
+      toast({
+        title: "Notes Updated",
+        description: "Equipment notes have been updated successfully",
       });
     }
   };
@@ -302,6 +328,14 @@ const EquipmentComponent = () => {
                       >
                         Edit
                       </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openNotesDialog(item)}
+                        title="Add/Edit Notes"
+                      >
+                        <MessageSquareEdit className="h-4 w-4" />
+                      </Button>
                       <select
                         value={item.status}
                         onChange={(e) => handleStatusChange(item.id, e.target.value as EquipmentStatus)}
@@ -400,6 +434,29 @@ const EquipmentComponent = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleEditEquipment}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={isNotesDialogOpen} onOpenChange={setIsNotesDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Equipment Notes</DialogTitle>
+            <DialogDescription>
+              Add or update notes for this equipment
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Textarea
+              value={noteContent}
+              onChange={(e) => setNoteContent(e.target.value)}
+              placeholder="Enter notes about this equipment..."
+              className="min-h-[150px]"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsNotesDialogOpen(false)}>Cancel</Button>
+            <Button onClick={saveNotes}>Save Notes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

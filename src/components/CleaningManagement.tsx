@@ -6,7 +6,8 @@ import {
   Clock, 
   Filter,
   Plus,
-  Trash2
+  Trash2,
+  MessageSquareEdit
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -122,11 +123,13 @@ const CleaningManagement = () => {
   });
   
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [noteContent, setNoteContent] = useState('');
   
   const handleStatusChange = (id: string, newStatus: 'completed' | 'pending' | 'overdue') => {
     setCleaningTasks(cleaningTasks.map(task => {
       if (task.id === id) {
-        // Update lastCleaned date if marked as completed
         const updatedTask = { 
           ...task, 
           status: newStatus
@@ -170,7 +173,6 @@ const CleaningManagement = () => {
   };
   
   const handleAddTask = () => {
-    // Calculate next due date based on frequency
     const nextDueDate = getNextDueDate(newTask.lastCleaned, newTask.frequency);
     
     const newId = (Math.max(...cleaningTasks.map(t => parseInt(t.id))) + 1).toString();
@@ -180,7 +182,6 @@ const CleaningManagement = () => {
       nextDue: nextDueDate
     }]);
     
-    // Reset the form
     setNewTask({
       area: '',
       assignedTo: '',
@@ -208,13 +209,32 @@ const CleaningManagement = () => {
     });
   };
   
+  const openNotesDialog = (task: CleaningTask) => {
+    setSelectedTaskId(task.id);
+    setNoteContent(task.notes);
+    setIsNotesDialogOpen(true);
+  };
+  
+  const saveNotes = () => {
+    if (selectedTaskId) {
+      setCleaningTasks(cleaningTasks.map(task => 
+        task.id === selectedTaskId ? { ...task, notes: noteContent } : task
+      ));
+      
+      setIsNotesDialogOpen(false);
+      
+      toast({
+        title: "Notes Updated",
+        description: "Task notes have been updated successfully",
+      });
+    }
+  };
+  
   const filteredTasks = cleaningTasks.filter(task => {
-    // Filter by status
     if (filterStatus !== 'all' && task.status !== filterStatus) {
       return false;
     }
     
-    // Filter by search term
     return (
       task.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
       task.assignedTo.toLowerCase().includes(searchTerm.toLowerCase())
@@ -393,6 +413,14 @@ const CleaningManagement = () => {
                           <Button
                             variant="outline"
                             size="sm"
+                            onClick={() => openNotesDialog(task)}
+                            title="Add/Edit Notes"
+                          >
+                            <MessageSquareEdit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleDeleteTask(task.id)}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -423,6 +451,29 @@ const CleaningManagement = () => {
           {/* The filtered content will appear based on the filter state */}
         </TabsContent>
       </Tabs>
+      
+      <Dialog open={isNotesDialogOpen} onOpenChange={setIsNotesDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Task Notes</DialogTitle>
+            <DialogDescription>
+              Add or update notes for this cleaning task
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Textarea
+              value={noteContent}
+              onChange={(e) => setNoteContent(e.target.value)}
+              placeholder="Enter notes about the cleaning task..."
+              className="min-h-[150px]"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsNotesDialogOpen(false)}>Cancel</Button>
+            <Button onClick={saveNotes}>Save Notes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
