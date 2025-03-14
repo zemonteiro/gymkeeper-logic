@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, Users, Calendar, BarChart3, Menu, ChevronLeft, ChevronRight, Dumbbell, Droplets, LayoutDashboard, Eye } from 'lucide-react';
+import { Activity, Users, Calendar, BarChart3, Menu, ChevronLeft, ChevronRight, Dumbbell, Droplets, LayoutDashboard, Eye, KeySquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -30,6 +30,7 @@ const Navigation = () => {
     { name: 'Statistics', path: '/stats', icon: BarChart3 },
     { name: 'Equipment', path: '/equipment', icon: Dumbbell },
     { name: 'Cleaning', path: '/cleaning', icon: Droplets },
+    { name: 'Access Control', path: '/access-control', icon: KeySquare },
     { name: 'Client View', path: '/client-view', icon: Eye },
   ];
   

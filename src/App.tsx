@@ -11,6 +11,7 @@ import Stats from "./pages/Stats";
 import Equipment from "./pages/Equipment";
 import Cleaning from "./pages/Cleaning";
 import ClientView from "./pages/ClientView";
+import AccessControl from "./pages/AccessControl";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/equipment" element={<Equipment />} />
           <Route path="/cleaning" element={<Cleaning />} />
           <Route path="/client-view" element={<ClientView />} />
+          <Route path="/access-control" element={<AccessControl />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
