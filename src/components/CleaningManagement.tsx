@@ -1,51 +1,17 @@
 
 import React, { useState } from 'react';
-import { 
-  Bath, 
-  Calendar, 
-  CheckCircle2, 
-  Clock, 
-  Filter,
-  Plus,
-  Trash2,
-  MessageSquare,
-  Notebook
-} from 'lucide-react';
+import { Filter, Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from './ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import NotesLogView from './ui/NotesLogView';
-
-interface CleaningTask {
-  id: string;
-  area: string;
-  assignedTo: string;
-  frequency: 'daily' | 'weekly' | 'monthly';
-  lastCleaned: string;
-  nextDue: string;
-  status: 'completed' | 'pending' | 'overdue';
-  notes: string;
-}
+import { CleaningTask } from '@/types/cleaning';
+import { getNextDueDate, formatNotesForLog } from '@/utils/cleaningUtils';
+import TasksTable from './cleaning/TasksTable';
+import AddTaskDialog from './cleaning/AddTaskDialog';
+import NotesDialog from './cleaning/NotesDialog';
+import { Notebook } from 'lucide-react';
 
 const CleaningManagement = () => {
   const { toast } = useToast();
@@ -158,24 +124,6 @@ const CleaningManagement = () => {
     });
   };
   
-  const getNextDueDate = (fromDate: string, frequency: 'daily' | 'weekly' | 'monthly') => {
-    const date = new Date(fromDate);
-    
-    switch (frequency) {
-      case 'daily':
-        date.setDate(date.getDate() + 1);
-        break;
-      case 'weekly':
-        date.setDate(date.getDate() + 7);
-        break;
-      case 'monthly':
-        date.setMonth(date.getMonth() + 1);
-        break;
-    }
-    
-    return date.toISOString().split('T')[0];
-  };
-  
   const handleAddTask = () => {
     const nextDueDate = getNextDueDate(newTask.lastCleaned, newTask.frequency);
     
@@ -244,30 +192,6 @@ const CleaningManagement = () => {
       task.assignedTo.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
-  
-  const getStatusBadge = (status: 'completed' | 'pending' | 'overdue') => {
-    switch (status) {
-      case 'completed':
-        return <span className="flex items-center text-gym-success"><CheckCircle2 className="mr-1 h-4 w-4" /> Completed</span>;
-      case 'pending':
-        return <span className="flex items-center text-gym-warning"><Clock className="mr-1 h-4 w-4" /> Pending</span>;
-      case 'overdue':
-        return <span className="flex items-center text-gym-error"><Calendar className="mr-1 h-4 w-4" /> Overdue</span>;
-      default:
-        return null;
-    }
-  };
-
-  const formatNotesForLog = () => {
-    return cleaningTasks
-      .filter(task => task.notes && task.notes.trim() !== '')
-      .map(task => ({
-        id: task.id,
-        itemName: task.area,
-        content: task.notes,
-        date: task.lastCleaned
-      }));
-  };
 
   return (
     <div className="space-y-6">
@@ -326,144 +250,22 @@ const CleaningManagement = () => {
                   />
                 </div>
                 
-                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button className="whitespace-nowrap">
-                      <Plus className="mr-2 h-4 w-4" /> Add Task
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Add New Cleaning Task</DialogTitle>
-                      <DialogDescription>
-                        Enter the details of the new cleaning task
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="area" className="text-right">Area</Label>
-                        <Input
-                          id="area"
-                          value={newTask.area}
-                          onChange={(e) => setNewTask({...newTask, area: e.target.value})}
-                          className="col-span-3"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="assignedTo" className="text-right">Assigned To</Label>
-                        <Input
-                          id="assignedTo"
-                          value={newTask.assignedTo}
-                          onChange={(e) => setNewTask({...newTask, assignedTo: e.target.value})}
-                          className="col-span-3"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="frequency" className="text-right">Frequency</Label>
-                        <select
-                          id="frequency"
-                          value={newTask.frequency}
-                          onChange={(e) => setNewTask({...newTask, frequency: e.target.value as 'daily' | 'weekly' | 'monthly'})}
-                          className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
-                        >
-                          <option value="daily">Daily</option>
-                          <option value="weekly">Weekly</option>
-                          <option value="monthly">Monthly</option>
-                        </select>
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="lastCleaned" className="text-right">Last Cleaned</Label>
-                        <Input
-                          id="lastCleaned"
-                          type="date"
-                          value={newTask.lastCleaned}
-                          onChange={(e) => setNewTask({...newTask, lastCleaned: e.target.value})}
-                          className="col-span-3"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="notes" className="text-right">Notes</Label>
-                        <Textarea
-                          id="notes"
-                          value={newTask.notes}
-                          onChange={(e) => setNewTask({...newTask, notes: e.target.value})}
-                          className="col-span-3"
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-                      <Button onClick={handleAddTask}>Add Task</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                <Button 
+                  className="whitespace-nowrap"
+                  onClick={() => setIsAddDialogOpen(true)}
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Add Task
+                </Button>
               </div>
             </div>
             
             <TabsContent value="all" className="m-0">
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Area</TableHead>
-                      <TableHead>Assigned To</TableHead>
-                      <TableHead>Frequency</TableHead>
-                      <TableHead>Last Cleaned</TableHead>
-                      <TableHead>Next Due</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredTasks.length > 0 ? (
-                      filteredTasks.map((task) => (
-                        <TableRow key={task.id}>
-                          <TableCell className="font-medium">{task.area}</TableCell>
-                          <TableCell>{task.assignedTo}</TableCell>
-                          <TableCell className="capitalize">{task.frequency}</TableCell>
-                          <TableCell>{task.lastCleaned}</TableCell>
-                          <TableCell>{task.nextDue}</TableCell>
-                          <TableCell>{getStatusBadge(task.status)}</TableCell>
-                          <TableCell>
-                            <div className="flex space-x-2">
-                              <select
-                                value={task.status}
-                                onChange={(e) => handleStatusChange(task.id, e.target.value as 'completed' | 'pending' | 'overdue')}
-                                className="h-9 rounded-md border border-input bg-background px-3 text-xs"
-                              >
-                                <option value="pending">Set Pending</option>
-                                <option value="completed">Mark Completed</option>
-                                <option value="overdue">Mark Overdue</option>
-                              </select>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => openNotesDialog(task)}
-                                title="Add/Edit Notes"
-                              >
-                                <MessageSquare className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleDeleteTask(task.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={7} className="text-center py-6 text-gym-muted">
-                          No tasks found. Try changing your filters or add a new task.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
+              <TasksTable 
+                tasks={filteredTasks}
+                onStatusChange={handleStatusChange}
+                onOpenNotesDialog={openNotesDialog}
+                onDeleteTask={handleDeleteTask}
+              />
             </TabsContent>
           </Tabs>
         </TabsContent>
@@ -471,34 +273,27 @@ const CleaningManagement = () => {
         <TabsContent value="notes">
           <NotesLogView 
             title="Cleaning Notes Log" 
-            notes={formatNotesForLog()} 
+            notes={formatNotesForLog(cleaningTasks)} 
             emptyMessage="No cleaning notes found. Add notes to tasks to see them here."
           />
         </TabsContent>
       </Tabs>
       
-      <Dialog open={isNotesDialogOpen} onOpenChange={setIsNotesDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Task Notes</DialogTitle>
-            <DialogDescription>
-              Add or update notes for this cleaning task
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <Textarea
-              placeholder="Enter notes about this cleaning task..."
-              value={noteContent}
-              onChange={(e) => setNoteContent(e.target.value)}
-              rows={5}
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsNotesDialogOpen(false)}>Cancel</Button>
-            <Button onClick={saveNotes}>Save Notes</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AddTaskDialog
+        isOpen={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        newTask={newTask}
+        setNewTask={setNewTask}
+        onAddTask={handleAddTask}
+      />
+      
+      <NotesDialog
+        isOpen={isNotesDialogOpen}
+        onOpenChange={setIsNotesDialogOpen}
+        noteContent={noteContent}
+        setNoteContent={setNoteContent}
+        onSave={saveNotes}
+      />
     </div>
   );
 };
