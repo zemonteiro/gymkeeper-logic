@@ -1,51 +1,17 @@
+
 import React, { useState } from 'react';
-import { 
-  Wrench, 
-  AlertCircle, 
-  CheckCircle, 
-  Clock, 
-  Search,
-  Plus,
-  Trash2,
-  MessageSquare,
-  Notebook
-} from 'lucide-react';
+import { Search, Plus, Notebook } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from './ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import NotesLogView from './ui/NotesLogView';
-
-type EquipmentStatus = 'operational' | 'maintenance' | 'out-of-order';
-
-interface Equipment {
-  id: string;
-  name: string;
-  type: string;
-  location: string;
-  status: EquipmentStatus;
-  lastMaintenance: string;
-  notes: string;
-}
+import { Equipment, EquipmentStatus } from '@/types/equipment';
+import { formatNotesForLog } from '@/utils/equipmentUtils';
+import EquipmentTable from './equipment/EquipmentTable';
+import AddEquipmentDialog from './equipment/AddEquipmentDialog';
+import EditEquipmentDialog from './equipment/EditEquipmentDialog';
+import NotesDialog from './equipment/NotesDialog';
 
 const EquipmentComponent = () => {
   const { toast } = useToast();
@@ -186,30 +152,6 @@ const EquipmentComponent = () => {
     item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
-  const getStatusBadge = (status: EquipmentStatus) => {
-    switch (status) {
-      case 'operational':
-        return <span className="flex items-center text-gym-success"><CheckCircle className="mr-1 h-4 w-4" /> Operational</span>;
-      case 'maintenance':
-        return <span className="flex items-center text-gym-warning"><Clock className="mr-1 h-4 w-4" /> Maintenance</span>;
-      case 'out-of-order':
-        return <span className="flex items-center text-gym-error"><AlertCircle className="mr-1 h-4 w-4" /> Out of Order</span>;
-      default:
-        return null;
-    }
-  };
-
-  const formatNotesForLog = () => {
-    return equipment
-      .filter(item => item.notes && item.notes.trim() !== '')
-      .map(item => ({
-        id: item.id,
-        itemName: item.name,
-        content: item.notes,
-        date: item.lastMaintenance
-      }));
-  };
 
   return (
     <div className="space-y-6">
@@ -239,263 +181,57 @@ const EquipmentComponent = () => {
               />
             </div>
             
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="whitespace-nowrap">
-                  <Plus className="mr-2 h-4 w-4" /> Add Equipment
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add New Equipment</DialogTitle>
-                  <DialogDescription>
-                    Enter the details of the new equipment
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="name" className="text-right">Name</Label>
-                    <Input
-                      id="name"
-                      value={newEquipment.name}
-                      onChange={(e) => setNewEquipment({...newEquipment, name: e.target.value})}
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="type" className="text-right">Type</Label>
-                    <Input
-                      id="type"
-                      value={newEquipment.type}
-                      onChange={(e) => setNewEquipment({...newEquipment, type: e.target.value})}
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="location" className="text-right">Location</Label>
-                    <Input
-                      id="location"
-                      value={newEquipment.location}
-                      onChange={(e) => setNewEquipment({...newEquipment, location: e.target.value})}
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="status" className="text-right">Status</Label>
-                    <select
-                      id="status"
-                      value={newEquipment.status}
-                      onChange={(e) => setNewEquipment({...newEquipment, status: e.target.value as EquipmentStatus})}
-                      className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
-                    >
-                      <option value="operational">Operational</option>
-                      <option value="maintenance">Maintenance</option>
-                      <option value="out-of-order">Out of Order</option>
-                    </select>
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="maintenance" className="text-right">Last Maintenance</Label>
-                    <Input
-                      id="maintenance"
-                      type="date"
-                      value={newEquipment.lastMaintenance}
-                      onChange={(e) => setNewEquipment({...newEquipment, lastMaintenance: e.target.value})}
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="notes" className="text-right">Notes</Label>
-                    <Textarea
-                      id="notes"
-                      value={newEquipment.notes}
-                      onChange={(e) => setNewEquipment({...newEquipment, notes: e.target.value})}
-                      className="col-span-3"
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
-                  <Button onClick={handleAddEquipment}>Add Equipment</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <Button 
+              className="whitespace-nowrap" 
+              onClick={() => setIsAddDialogOpen(true)}
+            >
+              <Plus className="mr-2 h-4 w-4" /> Add Equipment
+            </Button>
           </div>
           
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Last Maintenance</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredEquipment.length > 0 ? (
-                  filteredEquipment.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">{item.name}</TableCell>
-                      <TableCell>{item.type}</TableCell>
-                      <TableCell>{item.location}</TableCell>
-                      <TableCell>{getStatusBadge(item.status)}</TableCell>
-                      <TableCell>{item.lastMaintenance}</TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setEditingEquipment(item);
-                              setIsEditDialogOpen(true);
-                            }}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => openNotesDialog(item)}
-                            title="Add/Edit Notes"
-                          >
-                            <MessageSquare className="h-4 w-4" />
-                          </Button>
-                          <select
-                            value={item.status}
-                            onChange={(e) => handleStatusChange(item.id, e.target.value as EquipmentStatus)}
-                            className="h-9 rounded-md border border-input bg-background px-3 text-xs"
-                          >
-                            <option value="operational">Set Operational</option>
-                            <option value="maintenance">Set Maintenance</option>
-                            <option value="out-of-order">Set Out of Order</option>
-                          </select>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-6 text-gym-muted">
-                      No equipment found matching your search.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-          
-          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Edit Equipment</DialogTitle>
-                <DialogDescription>
-                  Update the details of this equipment
-                </DialogDescription>
-              </DialogHeader>
-              {editingEquipment && (
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="edit-name" className="text-right">Name</Label>
-                    <Input
-                      id="edit-name"
-                      value={editingEquipment.name}
-                      onChange={(e) => setEditingEquipment({...editingEquipment, name: e.target.value})}
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="edit-type" className="text-right">Type</Label>
-                    <Input
-                      id="edit-type"
-                      value={editingEquipment.type}
-                      onChange={(e) => setEditingEquipment({...editingEquipment, type: e.target.value})}
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="edit-location" className="text-right">Location</Label>
-                    <Input
-                      id="edit-location"
-                      value={editingEquipment.location}
-                      onChange={(e) => setEditingEquipment({...editingEquipment, location: e.target.value})}
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="edit-status" className="text-right">Status</Label>
-                    <select
-                      id="edit-status"
-                      value={editingEquipment.status}
-                      onChange={(e) => setEditingEquipment({...editingEquipment, status: e.target.value as EquipmentStatus})}
-                      className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm"
-                    >
-                      <option value="operational">Operational</option>
-                      <option value="maintenance">Maintenance</option>
-                      <option value="out-of-order">Out of Order</option>
-                    </select>
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="edit-maintenance" className="text-right">Last Maintenance</Label>
-                    <Input
-                      id="edit-maintenance"
-                      type="date"
-                      value={editingEquipment.lastMaintenance}
-                      onChange={(e) => setEditingEquipment({...editingEquipment, lastMaintenance: e.target.value})}
-                      className="col-span-3"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="edit-notes" className="text-right">Notes</Label>
-                    <Textarea
-                      id="edit-notes"
-                      value={editingEquipment.notes}
-                      onChange={(e) => setEditingEquipment({...editingEquipment, notes: e.target.value})}
-                      className="col-span-3"
-                    />
-                  </div>
-                </div>
-              )}
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-                <Button onClick={handleEditEquipment}>Save Changes</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          
-          <Dialog open={isNotesDialogOpen} onOpenChange={setIsNotesDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Equipment Notes</DialogTitle>
-                <DialogDescription>
-                  Add or update notes for this equipment
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <Textarea
-                  value={noteContent}
-                  onChange={(e) => setNoteContent(e.target.value)}
-                  placeholder="Enter notes about this equipment..."
-                  className="min-h-[150px]"
-                />
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsNotesDialogOpen(false)}>Cancel</Button>
-                <Button onClick={saveNotes}>Save Notes</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <EquipmentTable 
+            equipment={filteredEquipment}
+            onStatusChange={handleStatusChange}
+            onEdit={(item) => {
+              setEditingEquipment(item);
+              setIsEditDialogOpen(true);
+            }}
+            onOpenNotesDialog={openNotesDialog}
+          />
         </TabsContent>
         
         <TabsContent value="notes">
           <NotesLogView 
             title="Equipment Notes Log" 
-            notes={formatNotesForLog()} 
+            notes={formatNotesForLog(equipment)} 
             emptyMessage="No equipment notes have been added yet."
           />
         </TabsContent>
       </Tabs>
+      
+      <AddEquipmentDialog
+        isOpen={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        newEquipment={newEquipment}
+        setNewEquipment={setNewEquipment}
+        onAddEquipment={handleAddEquipment}
+      />
+      
+      <EditEquipmentDialog
+        isOpen={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        editingEquipment={editingEquipment}
+        setEditingEquipment={setEditingEquipment}
+        onSave={handleEditEquipment}
+      />
+      
+      <NotesDialog
+        isOpen={isNotesDialogOpen}
+        onOpenChange={setIsNotesDialogOpen}
+        noteContent={noteContent}
+        setNoteContent={setNoteContent}
+        onSave={saveNotes}
+      />
     </div>
   );
 };
