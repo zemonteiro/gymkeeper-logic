@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Bath, 
@@ -456,5 +457,50 @@ const CleaningManagement = () => {
                     ) : (
                       <TableRow>
                         <TableCell colSpan={7} className="text-center py-6 text-gym-muted">
-                         
+                          No tasks found. Try changing your filters or add a new task.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </TabsContent>
+        
+        <TabsContent value="notes">
+          <NotesLogView 
+            title="Cleaning Notes Log" 
+            notes={formatNotesForLog()} 
+            emptyMessage="No cleaning notes found. Add notes to tasks to see them here."
+          />
+        </TabsContent>
+      </Tabs>
+      
+      <Dialog open={isNotesDialogOpen} onOpenChange={setIsNotesDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Task Notes</DialogTitle>
+            <DialogDescription>
+              Add or update notes for this cleaning task
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Textarea
+              placeholder="Enter notes about this cleaning task..."
+              value={noteContent}
+              onChange={(e) => setNoteContent(e.target.value)}
+              rows={5}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsNotesDialogOpen(false)}>Cancel</Button>
+            <Button onClick={saveNotes}>Save Notes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
 
+export default CleaningManagement;
