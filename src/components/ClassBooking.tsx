@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,10 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Calendar, Filter } from 'lucide-react';
+import { Plus, Calendar, Filter, RefreshCw } from 'lucide-react';
 import ClassCard, { GymClass } from './ui/ClassCard';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { fetchClassPassBookings, getClassPassConfig, registerClassWithClassPass } from '@/utils/classpassUtils';
+import { Badge } from './ui/badge';
 
 // Sample class data
 const sampleClasses: GymClass[] = [
@@ -96,8 +98,40 @@ const ClassBooking = () => {
     enrolled: 0,
     description: '',
   });
+  const [classPassBookings, setClassPassBookings] = useState<{[classId: string]: number}>({});
+  const [isLoadingClassPass, setIsLoadingClassPass] = useState(false);
   
-  const handleAddClass = () => {
+  // Fetch ClassPass bookings when the component mounts
+  useEffect(() => {
+    fetchClassPassBookingsForAllClasses();
+  }, []);
+  
+  const fetchClassPassBookingsForAllClasses = async () => {
+    const config = getClassPassConfig();
+    if (!config.isEnabled) return;
+    
+    setIsLoadingClassPass(true);
+    
+    try {
+      const bookingCounts: {[classId: string]: number} = {};
+      
+      // Fetch ClassPass bookings for each class
+      for (const gymClass of classes) {
+        const bookings = await fetchClassPassBookings(gymClass.id);
+        if (bookings.length > 0) {
+          bookingCounts[gymClass.id] = bookings.length;
+        }
+      }
+      
+      setClassPassBookings(bookingCounts);
+    } catch (error) {
+      console.error('Error fetching ClassPass bookings:', error);
+    } finally {
+      setIsLoadingClassPass(false);
+    }
+  };
+  
+  const handleAddClass = async () => {
     if (!newClass.name || !newClass.instructor || !newClass.date || !newClass.time) {
       toast.error('Please fill in all required fields');
       return;
@@ -128,6 +162,12 @@ const ClassBooking = () => {
     });
     setIsAddDialogOpen(false);
     toast.success('Class added successfully');
+    
+    // Register the class with ClassPass if integration is enabled
+    const classPassConfig = getClassPassConfig();
+    if (classPassConfig.isEnabled) {
+      await registerClassWithClassPass(gymClass);
+    }
   };
   
   const handleEditClass = (id: string) => {
@@ -164,102 +204,118 @@ const ClassBooking = () => {
           <p className="text-gym-muted">Manage fitness classes and schedules</p>
         </div>
         
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus size={16} className="mr-2" />
-              Add Class
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[550px]">
-            <DialogHeader>
-              <DialogTitle>Schedule New Class</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="class-name">Class Name</Label>
-                <Input
-                  id="class-name"
-                  placeholder="Enter class name"
-                  value={newClass.name}
-                  onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
-                />
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="instructor">Instructor</Label>
-                <Input
-                  id="instructor"
-                  placeholder="Enter instructor name"
-                  value={newClass.instructor}
-                  onChange={(e) => setNewClass({ ...newClass, instructor: e.target.value })}
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="date">Date</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={newClass.date}
-                    onChange={(e) => setNewClass({ ...newClass, date: e.target.value })}
-                  />
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="time">Time</Label>
-                  <Input
-                    id="time"
-                    type="time"
-                    value={newClass.time}
-                    onChange={(e) => setNewClass({ ...newClass, time: e.target.value })}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="duration">Duration (minutes)</Label>
-                  <Input
-                    id="duration"
-                    type="number"
-                    min="15"
-                    step="5"
-                    value={newClass.duration}
-                    onChange={(e) => setNewClass({ ...newClass, duration: parseInt(e.target.value) })}
-                  />
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="capacity">Capacity</Label>
-                  <Input
-                    id="capacity"
-                    type="number"
-                    min="1"
-                    value={newClass.capacity}
-                    onChange={(e) => setNewClass({ ...newClass, capacity: parseInt(e.target.value) })}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Enter class description"
-                  rows={3}
-                  value={newClass.description}
-                  onChange={(e) => setNewClass({ ...newClass, description: e.target.value })}
-                />
-              </div>
-              
-              <Button type="button" className="mt-4" onClick={handleAddClass}>
-                Schedule Class
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={fetchClassPassBookingsForAllClasses} disabled={isLoadingClassPass}>
+            <RefreshCw size={16} className={`mr-2 ${isLoadingClassPass ? 'animate-spin' : ''}`} />
+            Sync ClassPass Bookings
+          </Button>
+          
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus size={16} className="mr-2" />
+                Add Class
               </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[550px]">
+              <DialogHeader>
+                <DialogTitle>Schedule New Class</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="class-name">Class Name</Label>
+                  <Input
+                    id="class-name"
+                    placeholder="Enter class name"
+                    value={newClass.name}
+                    onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
+                  />
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="instructor">Instructor</Label>
+                  <Input
+                    id="instructor"
+                    placeholder="Enter instructor name"
+                    value={newClass.instructor}
+                    onChange={(e) => setNewClass({ ...newClass, instructor: e.target.value })}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="date">Date</Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      value={newClass.date}
+                      onChange={(e) => setNewClass({ ...newClass, date: e.target.value })}
+                    />
+                  </div>
+                  
+                  <div className="grid gap-2">
+                    <Label htmlFor="time">Time</Label>
+                    <Input
+                      id="time"
+                      type="time"
+                      value={newClass.time}
+                      onChange={(e) => setNewClass({ ...newClass, time: e.target.value })}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="duration">Duration (minutes)</Label>
+                    <Input
+                      id="duration"
+                      type="number"
+                      min="15"
+                      step="5"
+                      value={newClass.duration}
+                      onChange={(e) => setNewClass({ ...newClass, duration: parseInt(e.target.value) })}
+                    />
+                  </div>
+                  
+                  <div className="grid gap-2">
+                    <Label htmlFor="capacity">Capacity</Label>
+                    <Input
+                      id="capacity"
+                      type="number"
+                      min="1"
+                      value={newClass.capacity}
+                      onChange={(e) => setNewClass({ ...newClass, capacity: parseInt(e.target.value) })}
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Enter class description"
+                    rows={3}
+                    value={newClass.description}
+                    onChange={(e) => setNewClass({ ...newClass, description: e.target.value })}
+                  />
+                </div>
+                
+                <div className="mt-2">
+                  <p className="text-sm mb-2">
+                    ClassPass Integration: <span className="font-medium">{getClassPassConfig().isEnabled ? 'Enabled' : 'Disabled'}</span>
+                  </p>
+                  {getClassPassConfig().isEnabled && (
+                    <p className="text-xs text-muted-foreground">This class will be automatically registered with ClassPass</p>
+                  )}
+                </div>
+                
+                <Button type="button" className="mt-4" onClick={handleAddClass}>
+                  Schedule Class
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       
       <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
@@ -286,13 +342,23 @@ const ClassBooking = () => {
         <TabsContent value="all" className="mt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredClasses.map((gymClass, index) => (
-              <ClassCard 
-                key={gymClass.id} 
-                gymClass={gymClass} 
-                onEdit={handleEditClass}
-                onDelete={handleDeleteClass}
-                delay={100 * index}
-              />
+              <div key={gymClass.id} className="relative">
+                {classPassBookings[gymClass.id] && (
+                  <Badge className="absolute -top-2 -right-2 z-10 bg-purple-500">
+                    {classPassBookings[gymClass.id]} ClassPass
+                  </Badge>
+                )}
+                <ClassCard 
+                  gymClass={{
+                    ...gymClass,
+                    // Add ClassPass bookings to the enrolled count for display
+                    enrolled: gymClass.enrolled + (classPassBookings[gymClass.id] || 0)
+                  }} 
+                  onEdit={handleEditClass}
+                  onDelete={handleDeleteClass}
+                  delay={100 * index}
+                />
+              </div>
             ))}
             
             {filteredClasses.length === 0 && (

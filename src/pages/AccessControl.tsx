@@ -2,6 +2,7 @@
 import React from 'react';
 import Layout from '../components/Layout';
 import AccessControlManager from '../components/accessControl/AccessControlManager';
+import ClassPassConfiguration from '../components/accessControl/ClassPassConfig';
 
 const AccessControl = () => {
   return (
@@ -12,6 +13,7 @@ const AccessControl = () => {
         </div>
         <div className="grid grid-cols-1 gap-6">
           <AccessControlManager />
+          <ClassPassConfiguration />
         </div>
       </div>
     </Layout>
