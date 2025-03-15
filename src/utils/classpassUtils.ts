@@ -55,13 +55,15 @@ export const fetchClassPassBookings = async (classId: string): Promise<ClassPass
     // For demo purposes, we'll return mock data based on class ID
     // In a real app, this would be actual data from ClassPass API
     const mockBookingsMap: { [key: string]: number } = {
-      '1': 3,  // 3 ClassPass bookings for class ID 1
-      '2': 0,  // No ClassPass bookings for class ID 2
-      '3': 2,  // 2 ClassPass bookings for class ID 3
-      '4': 1,  // 1 ClassPass booking for class ID 4
+      '1': 4,  // 4 ClassPass bookings for Morning Yoga
+      '2': 2,  // 2 ClassPass bookings for HIIT Training
+      '3': 3,  // 3 ClassPass bookings for Pilates
+      '4': 5,  // 5 ClassPass bookings for Zumba (very popular on ClassPass)
+      '5': 2,  // 2 ClassPass bookings for Spin Class
+      '6': 1,  // 1 ClassPass booking for Strength Training
     };
     
-    const bookingCount = mockBookingsMap[classId] || 0;
+    const bookingCount = mockBookingsMap[classId] || Math.floor(Math.random() * 3); // Random 0-2 for other classes
     
     // Generate the specified number of mock bookings
     const bookings: ClassPassBooking[] = [];
