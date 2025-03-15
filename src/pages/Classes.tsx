@@ -8,8 +8,8 @@ const Classes = () => {
   return (
     <Layout>
       <div className="container mx-auto py-6 space-y-12">
-        <ClassPassConfiguration />
         <ClassBooking />
+        <ClassPassConfiguration />
       </div>
     </Layout>
   );

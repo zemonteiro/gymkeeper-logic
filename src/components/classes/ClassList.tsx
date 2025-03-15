@@ -2,7 +2,7 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Calendar, Filter, Plus } from 'lucide-react';
+import { Calendar, Filter, Plus, Package } from 'lucide-react';
 import ClassCard, { GymClass } from '@/components/ui/ClassCard';
 import { Badge } from '@/components/ui/badge';
 
@@ -51,8 +51,9 @@ const ClassList: React.FC<ClassListProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredClasses.map((gymClass, index) => (
             <div key={gymClass.id} className="relative">
-              {classPassBookings[gymClass.id] && (
+              {classPassBookings[gymClass.id] > 0 && (
                 <Badge className="absolute -top-2 -right-2 z-10 bg-purple-500">
+                  <Package size={14} className="mr-1" />
                   {classPassBookings[gymClass.id]} ClassPass
                 </Badge>
               )}
@@ -65,6 +66,7 @@ const ClassList: React.FC<ClassListProps> = ({
                 onEdit={handleEditClass}
                 onDelete={handleDeleteClass}
                 delay={100 * index}
+                classPassAttendees={classPassBookings[gymClass.id] || 0}
               />
             </div>
           ))}

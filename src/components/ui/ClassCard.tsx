@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { Clock, Users, CalendarDays } from 'lucide-react';
+import { Clock, Users, CalendarDays, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AnimatedCard from './AnimatedCard';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 export interface GymClass {
   id: string;
@@ -21,15 +22,18 @@ interface ClassCardProps {
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   delay?: number;
+  classPassAttendees?: number;
 }
 
 const ClassCard: React.FC<ClassCardProps> = ({ 
   gymClass, 
   onEdit, 
   onDelete,
-  delay = 0
+  delay = 0,
+  classPassAttendees = 0
 }) => {
   const capacityPercentage = (gymClass.enrolled / gymClass.capacity) * 100;
+  const regularAttendees = gymClass.enrolled - classPassAttendees;
   
   return (
     <AnimatedCard delay={delay}>
@@ -99,10 +103,37 @@ const ClassCard: React.FC<ClassCardProps> = ({
         ></div>
       </div>
       
-      <div className="flex justify-between text-xs text-gym-muted">
+      <div className="flex justify-between text-xs text-gym-muted mb-2">
         <span>Enrollment</span>
         <span>{capacityPercentage.toFixed(0)}%</span>
       </div>
+      
+      {classPassAttendees > 0 && (
+        <Accordion type="single" collapsible className="border rounded-md mt-3">
+          <AccordionItem value="attendees" className="border-b-0">
+            <AccordionTrigger className="py-2 px-3 text-sm">
+              <div className="flex items-center gap-1">
+                <Package size={14} className="text-purple-500" />
+                <span>ClassPass Attendees ({classPassAttendees})</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="px-3 py-2 text-sm">
+              <div className="flex justify-between">
+                <span>Regular Members:</span>
+                <span>{regularAttendees}</span>
+              </div>
+              <div className="flex justify-between text-purple-700">
+                <span>ClassPass Members:</span>
+                <span>{classPassAttendees}</span>
+              </div>
+              <div className="flex justify-between font-medium mt-1 pt-1 border-t">
+                <span>Total:</span>
+                <span>{gymClass.enrolled}</span>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )}
     </AnimatedCard>
   );
 };

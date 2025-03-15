@@ -52,21 +52,31 @@ export const fetchClassPassBookings = async (classId: string): Promise<ClassPass
     //   headers: { 'Authorization': `Bearer ${config.apiKey}` }
     // });
     
-    // For demo purposes, we'll return mock data for certain classes
-    if (classId === '1' || classId === '3') {
-      return [
-        {
-          id: `cp-${Math.random().toString(36).substring(2, 9)}`,
-          classId,
-          classPassUserId: 'cp-user-123',
-          userName: 'Alex Johnson (ClassPass)',
-          bookingTime: new Date().toISOString(),
-          status: 'confirmed'
-        }
-      ];
+    // For demo purposes, we'll return mock data based on class ID
+    // In a real app, this would be actual data from ClassPass API
+    const mockBookingsMap: { [key: string]: number } = {
+      '1': 3,  // 3 ClassPass bookings for class ID 1
+      '2': 0,  // No ClassPass bookings for class ID 2
+      '3': 2,  // 2 ClassPass bookings for class ID 3
+      '4': 1,  // 1 ClassPass booking for class ID 4
+    };
+    
+    const bookingCount = mockBookingsMap[classId] || 0;
+    
+    // Generate the specified number of mock bookings
+    const bookings: ClassPassBooking[] = [];
+    for (let i = 0; i < bookingCount; i++) {
+      bookings.push({
+        id: `cp-${Math.random().toString(36).substring(2, 9)}`,
+        classId,
+        classPassUserId: `cp-user-${i + 1}`,
+        userName: `ClassPass User ${i + 1}`,
+        bookingTime: new Date().toISOString(),
+        status: 'confirmed'
+      });
     }
     
-    return [];
+    return bookings;
   } catch (error) {
     console.error('Error fetching ClassPass bookings:', error);
     toast.error('Failed to fetch ClassPass bookings');
