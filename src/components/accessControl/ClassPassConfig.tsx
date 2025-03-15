@@ -19,21 +19,21 @@ const ClassPassConfiguration: React.FC = () => {
 
   return (
     <Card>
-      <CollapsibleTrigger asChild onClick={() => setIsOpen(!isOpen)}>
-        <CardHeader className="cursor-pointer">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>ClassPass Integration</CardTitle>
-              <CardDescription>
-                Configure the integration with ClassPass to allow their members to book classes at your gym
-              </CardDescription>
-            </div>
-            {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-          </div>
-        </CardHeader>
-      </CollapsibleTrigger>
-      
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <CollapsibleTrigger asChild>
+          <CardHeader className="cursor-pointer">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>ClassPass Integration</CardTitle>
+                <CardDescription>
+                  Configure the integration with ClassPass to allow their members to book classes at your gym
+                </CardDescription>
+              </div>
+              {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </div>
+          </CardHeader>
+        </CollapsibleTrigger>
+        
         <CollapsibleContent>
           <CardContent className="space-y-6">
             <div className="flex items-center space-x-2">
