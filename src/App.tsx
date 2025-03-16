@@ -12,6 +12,7 @@ import Equipment from "./pages/Equipment";
 import Cleaning from "./pages/Cleaning";
 import ClientView from "./pages/ClientView";
 import AccessControl from "./pages/AccessControl";
+import Sales from "./pages/Sales";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/cleaning" element={<Cleaning />} />
           <Route path="/client-view" element={<ClientView />} />
           <Route path="/access-control" element={<AccessControl />} />
+          <Route path="/sales" element={<Sales />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
