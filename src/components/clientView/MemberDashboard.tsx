@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Button } from '../ui/button';
@@ -6,6 +7,7 @@ import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import MemberStore from './MemberStore';
+import GymAccessTab from './GymAccessTab';
 
 const MemberDashboard = () => {
   const { toast } = useToast();
@@ -31,6 +33,7 @@ const MemberDashboard = () => {
         <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
         <TabsTrigger value="classes">My Classes</TabsTrigger>
         <TabsTrigger value="store">Store</TabsTrigger>
+        <TabsTrigger value="gym-access">Gym Access</TabsTrigger>
         <TabsTrigger value="profile">My Profile</TabsTrigger>
         <TabsTrigger value="subscription">Subscription</TabsTrigger>
         <TabsTrigger value="support">Support</TabsTrigger>
@@ -98,6 +101,10 @@ const MemberDashboard = () => {
       
       <TabsContent value="store" className="space-y-6">
         <MemberStore />
+      </TabsContent>
+      
+      <TabsContent value="gym-access" className="space-y-6">
+        <GymAccessTab />
       </TabsContent>
       
       <TabsContent value="profile" className="space-y-6">
