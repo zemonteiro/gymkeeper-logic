@@ -56,7 +56,7 @@ const Navigation = () => {
       {/* Navigation sidebar */}
       <aside
         className={cn(
-          "fixed lg:relative z-40 h-screen transition-all duration-300 ease-in-out glass-morphism",
+          "fixed lg:relative z-40 h-screen transition-all duration-300 ease-in-out glass-morphism flex flex-col",
           expanded 
             ? "w-64 shadow-elevated" 
             : "w-0 lg:w-20 overflow-hidden",
@@ -83,7 +83,7 @@ const Navigation = () => {
             </button>
           </div>
           
-          <nav className="flex-1 px-4">
+          <nav className="flex-1 px-4 overflow-y-auto">
             <ul className="space-y-2">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.path;
@@ -111,16 +111,6 @@ const Navigation = () => {
               })}
             </ul>
           </nav>
-          
-          <div className="px-6 mt-auto hidden">
-            <button
-              onClick={toggleSidebar}
-              className="hidden lg:flex items-center justify-center w-full p-2 rounded-lg text-gym-muted hover:text-gym-primary hover:bg-gym-secondary transition-colors"
-              aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
-            >
-              {expanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-            </button>
-          </div>
         </div>
       </aside>
     </>
