@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -38,7 +39,7 @@ const ClassList: React.FC<ClassListProps> = ({
           </TabsList>
           
           {totalClassPassBookings > 0 && (
-            <Badge className="bg-purple-500">
+            <Badge className="bg-purple-500 ml-2">
               <Package size={14} className="mr-1" />
               {totalClassPassBookings} ClassPass Total
             </Badge>

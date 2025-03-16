@@ -45,6 +45,13 @@ const ClassCard: React.FC<ClassCardProps> = ({
         </div>
         
         <div className="flex gap-1">
+          {classPassAttendees > 0 && (
+            <Badge className="bg-purple-500 mr-2">
+              <Package size={14} className="mr-1" />
+              {classPassAttendees} ClassPass
+            </Badge>
+          )}
+          
           {onEdit && (
             <Button 
               variant="outline" 

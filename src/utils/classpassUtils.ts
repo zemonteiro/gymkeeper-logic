@@ -20,7 +20,7 @@ export interface ClassPassBooking {
 const defaultConfig: ClassPassConfig = {
   apiKey: '',
   venueId: '',
-  isEnabled: false
+  isEnabled: true // Default to enabled for demonstration purposes
 };
 
 // Store and retrieve ClassPass configuration from localStorage
@@ -39,26 +39,16 @@ export const saveClassPassConfig = (config: ClassPassConfig): void => {
 export const fetchClassPassBookings = async (classId: string): Promise<ClassPassBooking[]> => {
   const config = getClassPassConfig();
   
-  if (!config.isEnabled || !config.apiKey || !config.venueId) {
-    console.log('ClassPass integration not properly configured');
-    return [];
-  }
-  
   console.log(`Fetching ClassPass bookings for class: ${classId}`);
   
   try {
     // This is a mock implementation - in a real app, you would call the actual ClassPass API
-    // Example: const response = await fetch(`https://api.classpass.com/v1/venues/${config.venueId}/classes/${classId}/bookings`, {
-    //   headers: { 'Authorization': `Bearer ${config.apiKey}` }
-    // });
-    
     // For demo purposes, we'll return mock data based on class ID
-    // In a real app, this would be actual data from ClassPass API
     const mockBookingsMap: { [key: string]: number } = {
       '1': 4,  // 4 ClassPass bookings for Morning Yoga
       '2': 2,  // 2 ClassPass bookings for HIIT Training
       '3': 3,  // 3 ClassPass bookings for Pilates
-      '4': 5,  // 5 ClassPass bookings for Zumba (very popular on ClassPass)
+      '4': 5,  // 5 ClassPass bookings for Zumba
       '5': 2,  // 2 ClassPass bookings for Spin Class
       '6': 1,  // 1 ClassPass booking for Strength Training
     };
@@ -91,7 +81,7 @@ export const fetchClassPassBookings = async (classId: string): Promise<ClassPass
 export const registerClassWithClassPass = async (gymClass: any): Promise<boolean> => {
   const config = getClassPassConfig();
   
-  if (!config.isEnabled || !config.apiKey || !config.venueId) {
+  if (!config.isEnabled) {
     console.log('ClassPass integration not properly configured');
     return false;
   }
@@ -99,20 +89,6 @@ export const registerClassWithClassPass = async (gymClass: any): Promise<boolean
   try {
     console.log(`Registering class with ClassPass: ${gymClass.name}`);
     // In a real implementation, you would make an API call to ClassPass
-    // Example: const response = await fetch(`https://api.classpass.com/v1/venues/${config.venueId}/classes`, {
-    //   method: 'POST',
-    //   headers: { 
-    //     'Authorization': `Bearer ${config.apiKey}`,
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify({
-    //     name: gymClass.name,
-    //     instructor: gymClass.instructor,
-    //     startTime: `${gymClass.date}T${gymClass.time}`,
-    //     duration: gymClass.duration,
-    //     capacity: gymClass.capacity
-    //   })
-    // });
     
     // For demo purposes, we'll just return true
     toast.success(`Class "${gymClass.name}" registered with ClassPass`);

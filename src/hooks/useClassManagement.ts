@@ -25,13 +25,14 @@ export const useClassManagement = () => {
   
   // Fetch ClassPass bookings when the component mounts
   useEffect(() => {
-    fetchClassPassBookingsForAllClasses();
+    const config = getClassPassConfig();
+    // Default to enabled for demonstration purposes
+    if (config.isEnabled || config.apiKey === '') {
+      fetchClassPassBookingsForAllClasses();
+    }
   }, []);
   
   const fetchClassPassBookingsForAllClasses = async () => {
-    const config = getClassPassConfig();
-    if (!config.isEnabled) return;
-    
     setIsLoadingClassPass(true);
     
     try {
@@ -46,8 +47,10 @@ export const useClassManagement = () => {
       }
       
       setClassPassBookings(bookingCounts);
+      toast.success(`Found ${Object.values(bookingCounts).reduce((sum, count) => sum + count, 0)} ClassPass bookings`);
     } catch (error) {
       console.error('Error fetching ClassPass bookings:', error);
+      toast.error('Failed to fetch ClassPass bookings');
     } finally {
       setIsLoadingClassPass(false);
     }
