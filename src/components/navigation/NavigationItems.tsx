@@ -80,7 +80,7 @@ const NavigationItems: React.FC<NavigationItemsProps> = ({ expanded }) => {
   );
 };
 
-// Create separate AuthItem component
+// Create separate AuthNavItem component
 export const AuthNavItem: React.FC<{expanded: boolean}> = ({ expanded }) => {
   const location = useLocation();
   const { toggleSidebar } = useNavigation();
