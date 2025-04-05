@@ -25,7 +25,7 @@ interface NavigationItemsProps {
 
 const NavigationItems: React.FC<NavigationItemsProps> = ({ expanded }) => {
   const location = useLocation();
-  const { profile, user } = useAuth();
+  const { profile, user, setAsAdmin } = useAuth();
   const { toggleSidebar } = useNavigation();
   const isMobile = useIsMobile();
   
@@ -35,6 +35,10 @@ const NavigationItems: React.FC<NavigationItemsProps> = ({ expanded }) => {
       toggleSidebar();
     }
   };
+  
+  // For testing: Temporarily show all navigation items
+  // In a production environment, you would remove this and properly check roles
+  const isAdminUser = true; // Temporary override for testing
   
   // Define navigation items based on user role
   const getNavItems = () => {
@@ -53,36 +57,45 @@ const NavigationItems: React.FC<NavigationItemsProps> = ({ expanded }) => {
       { name: 'Client View', path: '/client-view', icon: Eye },
     ];
     
-    // Only show admin items if user has admin role
-    // Make sure we properly check for admin roles
-    if (profile?.role === 'admin') {
-      return [...commonItems, ...adminItems];
-    }
-    
-    return commonItems;
+    // Temporary: Always include admin items for testing
+    return [...commonItems, ...adminItems];
   };
   
   const navItems = getNavItems();
   
   // Add console logs to help with debugging
   console.log('User profile:', profile);
-  console.log('Is admin?', profile?.role === 'admin');
+  console.log('Is admin override:', isAdminUser);
   console.log('Navigation items:', navItems);
   
   return (
-    <ul className="space-y-2">
-      {navItems.map((item) => (
-        <NavItem
-          key={item.name}
-          to={item.path}
-          isActive={location.pathname === item.path}
-          expanded={expanded}
-          onClick={handleNavClick}
-          icon={item.icon}
-          label={item.name}
-        />
-      ))}
-    </ul>
+    <div>
+      <ul className="space-y-2">
+        {navItems.map((item) => (
+          <NavItem
+            key={item.name}
+            to={item.path}
+            isActive={location.pathname === item.path}
+            expanded={expanded}
+            onClick={handleNavClick}
+            icon={item.icon}
+            label={item.name}
+          />
+        ))}
+      </ul>
+      
+      {/* Add a button to set as admin for testing */}
+      {user && !profile?.role && (
+        <div className="mt-6 px-4">
+          <button 
+            onClick={() => setAsAdmin()} 
+            className="text-xs text-gym-muted hover:text-gym-primary w-full text-left px-2 py-1 rounded-md hover:bg-gym-secondary"
+          >
+            Set as admin (Testing)
+          </button>
+        </div>
+      )}
+    </div>
   );
 };
 
