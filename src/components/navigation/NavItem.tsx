@@ -1,31 +1,30 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { useNavigation } from './NavigationContext';
 import { LucideIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface NavItemProps {
-  name: string;
-  path: string;
-  icon: LucideIcon;
+  to: string;
   isActive: boolean;
+  expanded: boolean;
   onClick?: () => void;
+  icon: LucideIcon;
+  label: string;
 }
 
 const NavItem: React.FC<NavItemProps> = ({ 
-  name, 
-  path, 
+  to, 
+  isActive, 
+  expanded, 
+  onClick, 
   icon: Icon, 
-  isActive,
-  onClick 
+  label 
 }) => {
-  const { expanded } = useNavigation();
-  
   return (
-    <li key={name}>
+    <li>
       <Link
-        to={path}
+        to={to}
         onClick={onClick}
         className={cn(
           "flex items-center py-3 px-4 rounded-lg transition-all duration-200",
@@ -34,10 +33,10 @@ const NavItem: React.FC<NavItemProps> = ({
             ? "bg-gym-primary text-white" 
             : "text-gym-muted hover:bg-gym-secondary hover:text-gym-primary"
         )}
-        aria-label={expanded ? name : `${name} (Icon only)`}
+        aria-label={expanded ? label : `${label} (Icon only)`}
       >
         <Icon size={20} className={expanded ? "mr-3" : "mx-auto"} />
-        {expanded && <span>{name}</span>}
+        {expanded && <span>{label}</span>}
       </Link>
     </li>
   );

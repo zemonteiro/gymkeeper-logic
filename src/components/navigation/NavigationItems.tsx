@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   Activity, 
   Users, 
@@ -17,12 +17,24 @@ import {
 import { useAuth } from '@/context';
 import NavItem from './NavItem';
 import { useNavigation } from './NavigationContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-const NavigationItems: React.FC = () => {
+interface NavigationItemsProps {
+  expanded: boolean;
+}
+
+const NavigationItems: React.FC<NavigationItemsProps> = ({ expanded }) => {
   const location = useLocation();
-  const { user, profile } = useAuth();
-  const { expanded, toggleSidebar } = useNavigation();
-  const isMobile = window.innerWidth < 768;
+  const { profile } = useAuth();
+  const { toggleSidebar } = useNavigation();
+  const isMobile = useIsMobile();
+  
+  // Close the sidebar when clicking a link on mobile
+  const handleNavClick = () => {
+    if (isMobile) {
+      toggleSidebar();
+    }
+  };
   
   // Define navigation items based on user role
   const getNavItems = () => {
@@ -51,7 +63,29 @@ const NavigationItems: React.FC = () => {
   
   const navItems = getNavItems();
   
-  // Close the sidebar when clicking a link on mobile
+  return (
+    <ul className="space-y-2">
+      {navItems.map((item) => (
+        <NavItem
+          key={item.name}
+          to={item.path}
+          isActive={location.pathname === item.path}
+          expanded={expanded}
+          onClick={handleNavClick}
+          icon={item.icon}
+          label={item.name}
+        />
+      ))}
+    </ul>
+  );
+};
+
+// Add auth item as a separate component to avoid conditional rendering issues
+NavigationItems.AuthItem = function AuthNavItem({ expanded }: { expanded: boolean }) {
+  const location = useLocation();
+  const { toggleSidebar } = useNavigation();
+  const isMobile = useIsMobile();
+  
   const handleNavClick = () => {
     if (isMobile) {
       toggleSidebar();
@@ -59,31 +93,16 @@ const NavigationItems: React.FC = () => {
   };
   
   return (
-    <nav className="flex-1 px-4 overflow-y-auto">
-      <ul className="space-y-2">
-        {navItems.map((item) => (
-          <NavItem
-            key={item.name}
-            name={item.name}
-            path={item.path}
-            icon={item.icon}
-            isActive={location.pathname === item.path}
-            onClick={handleNavClick}
-          />
-        ))}
-        
-        {/* Login/Signup link for unauthenticated users */}
-        {!user && (
-          <NavItem
-            name="Sign In"
-            path="/auth"
-            icon={LogIn}
-            isActive={location.pathname === '/auth'}
-            onClick={handleNavClick}
-          />
-        )}
-      </ul>
-    </nav>
+    <ul className="space-y-2 mt-4">
+      <NavItem
+        to="/auth"
+        isActive={location.pathname === '/auth'}
+        expanded={expanded}
+        onClick={handleNavClick}
+        icon={LogIn}
+        label="Sign In"
+      />
+    </ul>
   );
 };
 

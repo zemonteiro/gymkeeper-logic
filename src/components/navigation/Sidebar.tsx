@@ -2,13 +2,16 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { useNavigation } from './NavigationContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 import SidebarHeader from './SidebarHeader';
 import NavigationItems from './NavigationItems';
+import { useAuth } from '@/context';
 
 const Sidebar: React.FC = () => {
   const { expanded } = useNavigation();
-  const isMobile = window.innerWidth < 768;
-  
+  const isMobile = useIsMobile();
+  const { user } = useAuth();
+
   return (
     <aside
       className={cn(
@@ -21,7 +24,13 @@ const Sidebar: React.FC = () => {
     >
       <div className="flex flex-col h-full py-8">
         <SidebarHeader />
-        <NavigationItems />
+        
+        <nav className="flex-1 px-4 overflow-y-auto">
+          <NavigationItems expanded={expanded} />
+          
+          {/* Login/Signup link for unauthenticated users */}
+          {!user && <NavigationItems.AuthItem expanded={expanded} />}
+        </nav>
       </div>
     </aside>
   );

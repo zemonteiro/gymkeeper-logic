@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogIn, LogOut, User } from 'lucide-react';
-import { useAuth } from '@/context';
+import { LogOut, User, LogIn } from 'lucide-react';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -13,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context';
 
 const UserProfileMenu: React.FC = () => {
   const navigate = useNavigate();
