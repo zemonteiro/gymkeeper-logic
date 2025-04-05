@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { 
   Activity, 
   Users, 
@@ -80,8 +80,8 @@ const NavigationItems: React.FC<NavigationItemsProps> = ({ expanded }) => {
   );
 };
 
-// Add auth item as a separate component to avoid conditional rendering issues
-NavigationItems.AuthItem = function AuthNavItem({ expanded }: { expanded: boolean }) {
+// Create separate AuthItem component
+export const AuthNavItem: React.FC<{expanded: boolean}> = ({ expanded }) => {
   const location = useLocation();
   const { toggleSidebar } = useNavigation();
   const isMobile = useIsMobile();

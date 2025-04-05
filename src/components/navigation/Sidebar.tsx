@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { useNavigation } from './NavigationContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import SidebarHeader from './SidebarHeader';
-import NavigationItems from './NavigationItems';
+import NavigationItems, { AuthNavItem } from './NavigationItems';
 import { useAuth } from '@/context';
 
 const Sidebar: React.FC = () => {
@@ -29,7 +29,7 @@ const Sidebar: React.FC = () => {
           <NavigationItems expanded={expanded} />
           
           {/* Login/Signup link for unauthenticated users */}
-          {!user && <NavigationItems.AuthItem expanded={expanded} />}
+          {!user && <AuthNavItem expanded={expanded} />}
         </nav>
       </div>
     </aside>
