@@ -20,10 +20,27 @@ export interface AuthState {
   error: string | null;
 }
 
+// For now, we'll simplify these types to avoid the dependency on Database types
+// We'll update them properly when user memberships are implemented
 export type ProfileWithMembership = UserProfile & {
-  memberships: MemberMembership[] | null;
+  memberships: any[] | null;
 };
 
-export type MemberMembership = Database['public']['Tables']['member_memberships']['Row'] & {
-  membership: Database['public']['Tables']['memberships']['Row'];
+export type MemberMembership = {
+  id: string;
+  user_id: string;
+  membership_id: string;
+  start_date: string;
+  end_date: string;
+  payment_status: string;
+  created_at: string;
+  membership: {
+    id: string;
+    name: string;
+    description: string | null;
+    price: number;
+    duration_days: number;
+    features: any | null;
+    is_active: boolean | null;
+  };
 };
