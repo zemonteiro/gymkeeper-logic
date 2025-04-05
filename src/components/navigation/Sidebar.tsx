@@ -12,6 +12,10 @@ const Sidebar: React.FC = () => {
   const isMobile = useIsMobile();
   const { user } = useAuth();
 
+  // Log info to help with debugging
+  console.log('Sidebar user:', user);
+  console.log('Sidebar expanded:', expanded);
+
   return (
     <aside
       className={cn(

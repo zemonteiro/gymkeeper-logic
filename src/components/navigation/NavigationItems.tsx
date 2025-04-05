@@ -25,7 +25,7 @@ interface NavigationItemsProps {
 
 const NavigationItems: React.FC<NavigationItemsProps> = ({ expanded }) => {
   const location = useLocation();
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const { toggleSidebar } = useNavigation();
   const isMobile = useIsMobile();
   
@@ -54,7 +54,8 @@ const NavigationItems: React.FC<NavigationItemsProps> = ({ expanded }) => {
     ];
     
     // Only show admin items if user has admin role
-    if (profile && profile.role === 'admin') {
+    // Make sure we properly check for admin roles
+    if (profile?.role === 'admin') {
       return [...commonItems, ...adminItems];
     }
     
@@ -62,6 +63,11 @@ const NavigationItems: React.FC<NavigationItemsProps> = ({ expanded }) => {
   };
   
   const navItems = getNavItems();
+  
+  // Add console logs to help with debugging
+  console.log('User profile:', profile);
+  console.log('Is admin?', profile?.role === 'admin');
+  console.log('Navigation items:', navItems);
   
   return (
     <ul className="space-y-2">
