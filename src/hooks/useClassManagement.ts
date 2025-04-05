@@ -10,6 +10,7 @@ export const useClassManagement = () => {
   const [classes, setClasses] = useState<GymClass[]>(sampleClasses);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
+  const [selectedInstructor, setSelectedInstructor] = useState<string>('all');
   const [newClass, setNewClass] = useState<ClassFormData>({
     name: '',
     instructor: '',
@@ -104,22 +105,28 @@ export const useClassManagement = () => {
     toast.success('Class deleted successfully');
   };
   
-  const filteredClasses = activeTab === 'all' 
-    ? classes 
-    : classes.filter(c => {
-        const classDate = new Date(c.date);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        if (activeTab === 'today') {
-          return classDate.getTime() === today.getTime();
-        } else if (activeTab === 'upcoming') {
-          return classDate.getTime() > today.getTime();
-        } else if (activeTab === 'past') {
-          return classDate.getTime() < today.getTime();
-        }
-        return true;
-      });
+  // Get unique instructor names for the filter
+  const instructors = ['all', ...Array.from(new Set(classes.map(c => c.instructor)))];
+  
+  // Filter classes based on tab and instructor selection
+  const filteredClasses = classes.filter(c => {
+    // First apply the tab filter
+    const classDate = new Date(c.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const passesTabFilter = 
+      activeTab === 'all' || 
+      (activeTab === 'today' && classDate.getTime() === today.getTime()) ||
+      (activeTab === 'upcoming' && classDate.getTime() > today.getTime()) ||
+      (activeTab === 'past' && classDate.getTime() < today.getTime());
+    
+    // Then apply the instructor filter
+    const passesInstructorFilter = selectedInstructor === 'all' || c.instructor === selectedInstructor;
+    
+    // Return true only if both filters pass
+    return passesTabFilter && passesInstructorFilter;
+  });
 
   return {
     classes,
@@ -127,6 +134,9 @@ export const useClassManagement = () => {
     setIsAddDialogOpen,
     activeTab,
     setActiveTab,
+    selectedInstructor,
+    setSelectedInstructor,
+    instructors,
     newClass,
     setNewClass,
     classPassBookings,

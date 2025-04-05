@@ -2,13 +2,23 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Calendar, Filter, Plus, Package } from 'lucide-react';
+import { Calendar, Filter, Plus, Package, User } from 'lucide-react';
 import ClassCard, { GymClass } from '@/components/ui/ClassCard';
 import { Badge } from '@/components/ui/badge';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 interface ClassListProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
+  selectedInstructor: string;
+  setSelectedInstructor: (value: string) => void;
+  instructors: string[];
   filteredClasses: GymClass[];
   classPassBookings: { [classId: string]: number };
   handleEditClass: (id: string) => void;
@@ -19,6 +29,9 @@ interface ClassListProps {
 const ClassList: React.FC<ClassListProps> = ({
   activeTab,
   setActiveTab,
+  selectedInstructor,
+  setSelectedInstructor,
+  instructors,
   filteredClasses,
   classPassBookings,
   handleEditClass,
@@ -29,8 +42,8 @@ const ClassList: React.FC<ClassListProps> = ({
   
   return (
     <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+        <div className="flex flex-wrap items-center gap-2">
           <TabsList className="mr-2">
             <TabsTrigger value="all">All Classes</TabsTrigger>
             <TabsTrigger value="today">Today</TabsTrigger>
@@ -46,7 +59,25 @@ const ClassList: React.FC<ClassListProps> = ({
           )}
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center">
+            <Select value={selectedInstructor} onValueChange={setSelectedInstructor}>
+              <SelectTrigger className="w-[180px]">
+                <div className="flex items-center">
+                  <User size={16} className="mr-2 text-gym-muted" />
+                  <SelectValue placeholder="Filter by instructor" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {instructors.map((instructor) => (
+                  <SelectItem key={instructor} value={instructor}>
+                    {instructor === 'all' ? 'All Instructors' : instructor}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
           <Button variant="outline" size="sm">
             <Calendar size={16} className="mr-2" />
             Calendar View

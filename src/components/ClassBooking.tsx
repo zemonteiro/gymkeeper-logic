@@ -12,6 +12,9 @@ const ClassBooking = () => {
     setIsAddDialogOpen,
     activeTab,
     setActiveTab,
+    selectedInstructor,
+    setSelectedInstructor,
+    instructors,
     newClass,
     setNewClass,
     classPassBookings,
@@ -50,6 +53,9 @@ const ClassBooking = () => {
       <ClassList 
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        selectedInstructor={selectedInstructor}
+        setSelectedInstructor={setSelectedInstructor}
+        instructors={instructors}
         filteredClasses={filteredClasses}
         classPassBookings={classPassBookings}
         handleEditClass={handleEditClass}
