@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context'; // Updated import to use the correct path
 import { 
   DropdownMenu, 
   DropdownMenuContent, 

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context';
 import { Loader2 } from 'lucide-react';
 
 const Auth = () => {
@@ -17,7 +16,6 @@ const Auth = () => {
   const [lastName, setLastName] = useState('');
   const [activeTab, setActiveTab] = useState('login');
 
-  // If user is already logged in, redirect to home
   if (user) {
     return <Navigate to="/" />;
   }
